@@ -7,3 +7,6 @@ reportlab==4.2.0
 pyyaml==6.0.1
 pillow==10.2.0
 tensorflow-datasets==4.9.4
+pandas
+numpy
+seaborn

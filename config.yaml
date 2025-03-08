@@ -1,0 +1,14 @@
+data:
+  dataset: "plant_village"
+  image_size: [224, 224]
+  batch_size: 32
+
+model:
+  architecture: "MobileNetV2"
+  epochs: 1
+  learning_rate: 0.001
+  output_path: "models/model.h5"
+
+output:
+  heatmap_size: [224, 224]
+  pdf_filename: "plant_disease_report.pdf"

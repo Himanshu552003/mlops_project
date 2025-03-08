@@ -1,6 +1,5 @@
 import sys
 import os
-# Add project root to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 import tensorflow as tf
@@ -16,7 +15,6 @@ from src.visualization.visualize import get_gradcam_heatmap
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
-# Build and train model
 def build_model(num_classes):
     base_model = MobileNetV2(weights="imagenet", include_top=False, 
                              input_shape=(*config["data"]["image_size"], 3))
@@ -38,12 +36,10 @@ def train_model():
     model.save(config["model"]["output_path"])
     return model, info
 
-# Load trained model
 def load_trained_model():
     return tf.keras.models.load_model(config["model"]["output_path"])
 
-# Predict function
-def predict_crop(file_path, rainfall_value=0.0):  # rainfall_value kept for compatibility
+def predict_crop(file_path, rainfall_value=0.0):
     model = load_trained_model()
     _, info = load_data()
     class_names = info.features["label"].names
@@ -59,7 +55,7 @@ def predict_crop(file_path, rainfall_value=0.0):  # rainfall_value kept for comp
     confidence = float(preds[0][class_idx])
     label = class_names[class_idx]
     crop_type, disease = label.split("___") if "___" in label else (label, "Healthy")
-    disease_status = "Healthy" if "Healthy" in disease else "Diseased"
+    disease_status = "Healthy" if disease == "healthy" else "Diseased"  # Fixed logic
     unified_prediction = f"{crop_type} - {disease_status} - {disease}"
 
     heatmap = get_gradcam_heatmap(model, img_array)

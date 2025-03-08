@@ -70,8 +70,8 @@
             {% if filename %}
                 <div class="results-panel">
                     <h2>Analysis Results</h2>
-                    <div class="image-label">Uploaded Image:</div>
-                    <img src="{{ url_for('static', filename='uploads/original_' + filename) }}" alt="Uploaded Image">
+                    <div class="image-label">Uploaded Image</div>
+                    <img src="{{ url_for('static', filename='visualizations/highlighted_' + filename) }}" alt="Highlighted Image" onerror="this.src='{{ url_for('static', filename='uploads/original_' + filename) }}'">
                     {% if result %}
                         <div class="result-item">Crop Type: {{ result.crop_type }}</div>
                         <div class="result-item">Disease Status: {{ result.disease_status }}</div>

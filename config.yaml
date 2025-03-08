@@ -1,14 +1,62 @@
+# config.yaml
 data:
-  dataset: "plant_village"
-  image_size: [224, 224]
-  batch_size: 32
+  dataset: "plant_village"  # Original dataset for disease detection
+  image_size: [224, 224]    # For MobileNetV2
+  batch_size: 32            # For training MobileNetV2
+  processed_output_path: "data/processed/plantvillage_yield_data.csv"  # Synthetic yield data
+  plantvillage_crops:       # Crops matching PlantVillage
+    - "Apple"
+    - "Blueberry"
+    - "Cherry"
+    - "Maize"
+    - "Grape"
+    - "Orange"
+    - "Peach"
+    - "Pepper"
+    - "Potato"
+    - "Raspberry"
+    - "Soybean"
+    - "Squash"
+    - "Strawberry"
+    - "Tomato"
+  synthetic_ranges:         # Parameters for synthetic yield data
+    n_samples_per_crop: 1000
+    rainfall: [50, 500]     # mm
+    fertilization: [50, 300]  # kg/ha
+    month: [1, 12]
+    soil_types: ["Clay", "Loam", "Sandy"]
+    disease_status: ["Healthy", "Diseased"]
+    yield:                  # tonnes/ha ranges
+      Apple: [10, 40]
+      Blueberry: [1, 5]
+      Cherry: [5, 15]
+      Maize: [2, 10]
+      Grape: [5, 20]
+      Orange: [10, 30]
+      Peach: [10, 25]
+      Pepper: [2, 10]
+      Potato: [10, 40]
+      Raspberry: [1, 4]
+      Soybean: [1, 5]
+      Squash: [5, 15]
+      Strawberry: [1, 5]
+      Tomato: [10, 30]
 
 model:
-  architecture: "MobileNetV2"
+  architecture: "MobileNetV2"  # Original disease model
   epochs: 1
   learning_rate: 0.001
-  output_path: "models/model.h5"
+  output_path: "models/model.h5"  # Disease model output
+  yield_architecture: "XGBoost"   # Added for yield prediction
+  yield_params:                   # XGBoost parameters
+    n_estimators: 100
+    max_depth: 5
+    learning_rate: 0.1
+    random_state: 42
+  yield_output_path: "models/yield_model.pkl"  # Yield model output
 
 output:
-  heatmap_size: [224, 224]
-  pdf_filename: "plant_disease_report.pdf"
+  heatmap_size: [224, 224]      # Original heatmap size
+  pdf_filename: "plant_disease_report.pdf"  # Original PDF filename
+  upload_folder: "static/uploads"           # Added for Flask uploads
+  allowed_extensions: ["png", "jpg", "jpeg"]  # Added for Flask file types

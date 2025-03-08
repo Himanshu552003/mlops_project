@@ -25,7 +25,6 @@
         .results-panel h2 { color: #2f4f2f; font-size: 1.8rem; font-weight: 600; margin-bottom: 15px; }
         .results-panel img { max-width: 180px; max-height: 180px; border-radius: 8px; border: 2px solid #8B4513; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); margin-bottom: 15px; }
         .result-item { font-size: 1rem; font-weight: 500; color: #8B4513; padding: 8px; background: #f5e8e4; border-radius: 6px; width: 100%; max-width: 400px; text-align: left; margin: 5px 0; }
-        .heatmap-explanation { font-size: 0.9rem; color: #2f4f2f; padding: 8px; background: #e8f5e9; border-radius: 6px; width: 100%; max-width: 400px; text-align: left; margin: 5px 0; }
         .image-label { font-size: 1rem; color: #2f4f2f; font-weight: 500; margin-bottom: 5px; }
         .download-report-button { background: #8B4513; color: #ffffff; border: none; padding: 8px 20px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; margin-top: 15px; }
         .download-report-button:hover { background: #6B4226; transform: scale(1.05); box-shadow: 0 3px 12px rgba(107, 66, 38, 0.2); }
@@ -39,13 +38,32 @@
     <div class="container-fluid">
         <div class="header-section">
             <h1>Plant Disease Detection</h1>
-            <!-- [Navbar unchanged] -->
         </div>
         <div class="main-content">
             <div class="upload-area">
                 <h2>Upload Your Leaf Image</h2>
                 <form method="POST" enctype="multipart/form-data">
                     <input type="file" name="image" accept="image/png, image/jpeg, image/jpg" class="form-control mb-3" required>
+                    <div class="form-group">
+                        <label for="soil_type">Soil Type</label>
+                        <select name="soil_type" id="soil_type" class="form-control mb-3" required>
+                            <option value="Clay">Clay</option>
+                            <option value="Loam">Loam</option>
+                            <option value="Sandy">Sandy</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="rainfall">Rainfall (mm)</label>
+                        <input type="number" name="rainfall" id="rainfall" class="form-control mb-3" min="50" max="500" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fertilization">Fertilization (kg/ha)</label>
+                        <input type="number" name="fertilization" id="fertilization" class="form-control mb-3" min="50" max="300" step="0.1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="month">Month</label>
+                        <input type="number" name="month" id="month" class="form-control mb-3" min="1" max="12" required>
+                    </div>
                     <button type="submit" class="analyze-button">Analyze</button>
                 </form>
             </div>
@@ -53,16 +71,20 @@
                 <div class="results-panel">
                     <h2>Analysis Results</h2>
                     <div class="image-label">Uploaded Image:</div>
-                    <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded Image">
+                    <img src="{{ url_for('static', filename='uploads/original_' + filename) }}" alt="Uploaded Image">
                     {% if result %}
                         <div class="result-item">Crop Type: {{ result.crop_type }}</div>
                         <div class="result-item">Disease Status: {{ result.disease_status }}</div>
                         <div class="result-item">Disease Type: {{ result.disease_type }}</div>
                         <div class="result-item">Unified Prediction: {{ result.unified_prediction }}</div>
                         <div class="result-item">Confidence: {{ '%0.2f' % (result.confidence * 100) }}%</div>
-                        <div class="image-label">Heatmap:</div>
-                        <img src="{{ url_for('static', filename='uploads/' + filename.replace('.jpg', '_heatmap.jpg').replace('.png', '_heatmap.png')) }}" alt="Heatmap">
-                        <div class="heatmap-explanation">Heatmap Explanation: This image highlights areas the model focused on for its prediction. Red areas show high focus (likely disease spots), while blue/green areas show lower focus.</div>
+                        {% if yield_result and yield_inputs %}
+                            <div class="result-item">Soil Type: {{ yield_inputs.soil_type }}</div>
+                            <div class="result-item">Rainfall: {{ yield_inputs.rainfall }} mm</div>
+                            <div class="result-item">Fertilization: {{ yield_inputs.fertilization }} kg/ha</div>
+                            <div class="result-item">Month: {{ yield_inputs.month }}</div>
+                            <div class="result-item">Predicted Yield: {{ yield_result.yield }} tonnes/ha</div>
+                        {% endif %}
                         <a href="{{ url_for('download_report', filename=filename) }}" class="download-report-button">Download Report</a>
                     {% else %}
                         <div class="error-message">No prediction available. Check the logs for errors.</div>

@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil  # For copying files
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from flask import Flask, render_template, request, send_file, url_for, abort, session
@@ -17,7 +18,7 @@ logging.basicConfig(level=logging.INFO, filename='app.log', filemode='a')
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_url_path='/static', static_folder='static', template_folder='templates')
-app.secret_key = "mysecret123"  # Fixed secret key
+app.secret_key = "mysecret123"
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
@@ -64,6 +65,8 @@ def index():
                 filename = f"{base_name}_{counter}{extension}"
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 counter += 1
+            
+            # Save the original image
             file.save(file_path)
             if not os.path.exists(file_path):
                 logger.error(f"File not found after save: {absolute_path}")
@@ -120,8 +123,10 @@ def download_report(filename):
         elements.append(Spacer(1, 20))
 
         try:
+            elements.append(Paragraph("Uploaded Image:", styles['Normal']))
             elements.append(Image(file_path, width=200, height=200))
             elements.append(Spacer(1, 10))
+            elements.append(Paragraph("Heatmap:", styles['Normal']))
             elements.append(Image(result['heatmap_path'], width=200, height=200))
             elements.append(Spacer(1, 20))
             logger.info(f"Images added to report: {file_path}, {result['heatmap_path']}")
